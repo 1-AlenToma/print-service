@@ -13,10 +13,13 @@
   "bin": {
     "printserver": "./bin/printserver.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "local printer service",
+    "printer"
+  ],
+  "author": "Alen Toma",
+  "license": "MIT",
+  "description": "http printer service",
   "dependencies": {
     "chrome-launcher": "^1.2.1",
     "cors": "^2.8.6",

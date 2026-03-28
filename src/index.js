@@ -28,6 +28,11 @@ const getBrowser = async () => {
     return browser;
 };
 
+const deleteFile = (file) => {
+    if (fs.existsSync(file))
+        fs.unlinkSync(file);
+}
+
 
 // Print function
 const printHTML = async (html, deviceId, settings) => {
@@ -55,13 +60,13 @@ const printHTML = async (html, deviceId, settings) => {
 
         logger.info(`Cleaned up temp PDF ${pdfPath}`);
 
-        return { printer: printerName, status: "printed" };
+        return { printer: deviceId, status: "printed" };
     } catch (e) {
         logger.info(`could not be printed "${e}"`);
         return { printer: deviceId, status: e.toString() };
 
     } finally {
-        fs.unlinkSync(pdfPath);
+        deleteFile(pdfPath);
     }
 
 

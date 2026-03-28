@@ -1,0 +1,104 @@
+import express from "express";
+import cors from "cors";
+import puppeteer from "puppeteer-core";
+import * as _pdfPrinter from "pdf-to-printer";
+import fs from "fs";
+import path from "path";
+import logger from "./logger.js";
+import { addJob } from "./printQueue.js";
+import * as chromeLauncher from "chrome-launcher";
+const pdfPrinter = _pdfPrinter.default;
+const basePath = process.cwd(); // or process.execPath if relative to exe
+console.log("basePath", basePath)
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// Puppeteer browser singleton
+let browser;
+const getBrowser = async () => {
+    if (!browser) {
+        const chromePath = await chromeLauncher.Launcher.getInstallations();
+        console.info("chrome path", chromePath)
+        browser = await puppeteer.launch({
+            executablePath: chromePath[0],
+            headless: true
+        });
+    }
+    return browser;
+};
+
+
+// Print function
+const printHTML = async (html, deviceId, settings) => {
+    const printers = await pdfPrinter.getPrinters();
+    const printerName = printers.find(x => x.deviceId == deviceId || x.name == deviceId)
+    if (!printerName) throw new Error("Printer not found");
+    const dir = path.join(basePath, "jobs");
+    if (!fs.existsSync(dir))
+        fs.mkdirSync(dir)
+    const pdfPath = path.resolve(`${dir}/temp_${Date.now()}.pdf`);
+    try {
+
+
+        const browser = await getBrowser();
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: "networkidle0" });
+
+
+        await page.pdf({ path: pdfPath, ...settings, printBackground: true });
+
+        logger.info(`Generated PDF for type "${deviceId}" at ${pdfPath}`);
+
+        await pdfPrinter.print(pdfPath, { printer: printerName.deviceId });
+        logger.info(`Printed PDF to printer "${printerName.deviceId}"`);
+
+        logger.info(`Cleaned up temp PDF ${pdfPath}`);
+
+        return { printer: printerName, status: "printed" };
+    } catch (e) {
+        logger.info(`could not be printed "${e}"`);
+        return { printer: deviceId, status: e.toString() };
+
+    } finally {
+        fs.unlinkSync(pdfPath);
+    }
+
+
+};
+
+
+app.get("/ping", async (req, res) => {
+    res.status(200).json({ "printerIsOnline": true });
+});
+
+
+app.get("/printers", async (req, res) => {
+
+    let data = await pdfPrinter.getPrinters();
+    let defaultPrinter = await pdfPrinter.getDefaultPrinter();
+    const result = data.filter(Boolean).map(x => {
+        if (defaultPrinter && x.deviceId == defaultPrinter.deviceId)
+            x.isDefault = true;
+        return x;
+    });
+    res.status(200).json(result);
+});
+
+// Endpoint
+app.post("/print", async (req, res) => {
+    const { deviceId, html, settings } = req.body;
+    if (!html) return res.status(400).json({ error: "HTML content is required" });
+
+    try {
+        console.log("printing", "deviceId", deviceId, "settings", settings)
+        const result = await addJob(() => printHTML(html, deviceId, settings));
+        res.json(result);
+    } catch (err) {
+        logger.error(`Print error: ${err.message}`);
+        res.status(500).json({ error: "Printing failed", details: err.message });
+    }
+});
+
+const PORT = 5000;
+app.listen(PORT, () => logger.info(`Silent print service running on http://localhost:${PORT}`));

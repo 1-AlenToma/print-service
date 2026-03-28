@@ -7,7 +7,7 @@
 
 ## NPM
 ```bash
-npm install -g print-service
+npm install -g invoice-print-service
 ```
 
 

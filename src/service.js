@@ -3,10 +3,10 @@ import { Service } from "node-windows";
 import path from "path";
 //const Service = require('node-windows').Service;
 const basePath = process.cwd(); // or process.execPath if relative to exe
-console.info("basePath", basePath);
-// Path to your main Express file
-const scriptPath = path.join(basePath, 'src/index.js');
 
+// Path to your main Express file
+const scriptPath = path.join(basePath, "src", 'index.js');
+console.info("basePath", basePath, "indexPath", scriptPath, "args", process.argv[2]);
 // Create a new service object
 const svc = new Service({
     name: 'alen-print-service',
@@ -28,6 +28,7 @@ const svc = new Service({
 const action = process.argv[2];
 
 if (action === 'install') {
+    console.info("installing service ...")
     svc.on('install', () => {
         console.log('Service installed successfully!');
         svc.start();
@@ -35,6 +36,7 @@ if (action === 'install') {
 
     svc.install();
 } else if (action === 'uninstall') {
+    console.info("uninstalling service ...")
     svc.on('uninstall', () => {
         console.log('Service uninstalled successfully!');
     });

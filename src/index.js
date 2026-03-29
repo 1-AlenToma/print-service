@@ -39,7 +39,7 @@ const deleteFile = (file) => {
 const printHTML = async (html, deviceId, settings) => {
     const printers = await pdfPrinter.getPrinters();
     const printerName = printers.find(x => x.deviceId == deviceId || x.name == deviceId)
-    if (!printerName) throw new Error("Printer not found");
+    if (!printerName) return { printer: deviceId, status: "Printer not found" };
     const dir = path.join(basePath, "jobs");
     if (!fs.existsSync(dir))
         fs.mkdirSync(dir)
@@ -54,17 +54,17 @@ const printHTML = async (html, deviceId, settings) => {
 
         await page.pdf({ path: pdfPath, ...settings, printBackground: true });
 
-        logger.info(`Generated PDF for type "${deviceId}" at ${pdfPath}`);
+        logger.info(`Generated PDF for type "${printerName.name}" at ${pdfPath}`);
 
-        await pdfPrinter.print(pdfPath, { printer: printerName.deviceId });
-        logger.info(`Printed PDF to printer "${printerName.deviceId}"`);
+        await pdfPrinter.print(pdfPath, { printer: printerName.name });
+        logger.info(`Printed PDF to printer "${printerName.name}"`);
 
         logger.info(`Cleaned up temp PDF ${pdfPath}`);
 
-        return { printer: deviceId, status: "printed" };
+        return { printer: printerName.name, status: "printed" };
     } catch (e) {
         logger.info(`could not be printed "${e}"`);
-        return { printer: deviceId, status: e.toString() };
+        return { printer: printerName.name, status: e.toString() };
 
     } finally {
         deleteFile(pdfPath);

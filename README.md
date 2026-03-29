@@ -125,6 +125,9 @@ Logs are generated using `logger.js`. You can customize it to output to console,
 
 ---
 
+http://localhost:5000/registerPrinters?api=http://localhost:3000/api
+localPrint connect to serverapi
+
 ## Notes
 
 - Chrome must be installed and detected by `chrome-launcher`.

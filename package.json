@@ -1,6 +1,6 @@
 {
   "name": "invoice-print-service",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -31,7 +31,9 @@
     "node-windows": "^1.0.0-beta.8",
     "pdf-to-printer": "^5.7.0",
     "puppeteer-core": "^24.40.0",
+    "uuid": "^13.0.0",
     "winston": "^3.19.0",
+    "ws": "^8.20.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {

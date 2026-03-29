@@ -1,6 +1,6 @@
 {
   "name": "invoice-print-service",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -17,6 +17,10 @@
     "local printer service",
     "printer"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1-AlenToma/print-service.git"
+  },
   "author": "Alen Toma",
   "license": "MIT",
   "description": "http printer service",

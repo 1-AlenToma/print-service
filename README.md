@@ -35,7 +35,7 @@ The `service.js` script allows you to install/uninstall the Express print servic
 printserver install
 ```
 
-- The service is named **MyExpressApp** (or change the `name` in `service.js`).
+- The service is named **alen-print-service** (or change the `name` in `service.js`).
 - The service will start automatically.
 
 3. To uninstall:

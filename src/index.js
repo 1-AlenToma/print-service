@@ -7,8 +7,9 @@ import path from "path";
 import logger from "./logger.js";
 import { addJob } from "./printQueue.js";
 import * as chromeLauncher from "chrome-launcher";
+import __dirname from "./dirName.js";
 const pdfPrinter = _pdfPrinter.default;
-const basePath = process.cwd(); // or process.execPath if relative to exe
+const basePath = __dirname // or process.execPath if relative to exe
 console.log("basePath", basePath)
 const app = express();
 app.use(express.json());

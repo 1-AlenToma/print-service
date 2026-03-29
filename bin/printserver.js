@@ -3,6 +3,7 @@ import path from "path";
 import { spawn } from "child_process";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import __dirname from "../src/dirName.js";
 
 const argv = yargs(hideBin(process.argv))
     .command("install", "Install the Windows service", {}, () => {
@@ -16,8 +17,8 @@ const argv = yargs(hideBin(process.argv))
     .argv;
 
 function runServiceScript(action) {
-    console.info("Service base path", process.cwd())
-    const scriptPath = path.join(process.cwd(), "src", "service.js");
+    console.info("Service base path", __dirname)
+    const scriptPath = path.join(__dirname, "service.js");
     const node = process.execPath;
 
     const child = spawn(node, [scriptPath, action], {

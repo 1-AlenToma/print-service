@@ -1,11 +1,12 @@
 // service.js
 import { Service } from "node-windows";
 import path from "path";
+import __dirname from "./dirName.js";
 //const Service = require('node-windows').Service;
-const basePath = process.cwd(); // or process.execPath if relative to exe
+const basePath = __dirname // or process.execPath if relative to exe
 
 // Path to your main Express file
-const scriptPath = path.join(basePath, "src", 'index.js');
+const scriptPath = path.join(basePath, 'index.js');
 console.info("basePath", basePath, "indexPath", scriptPath, "args", process.argv[2]);
 // Create a new service object
 const svc = new Service({
